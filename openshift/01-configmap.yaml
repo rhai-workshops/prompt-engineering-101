@@ -27,7 +27,7 @@ data:
   MESSAGE_RATE_LIMIT_WINDOW: "15"  # minutes
 
   # Model Configuration
-  OPENAI_MODELS: "gpt-4-turbo-preview,gpt-4,gpt-3.5-turbo,claude-3-opus,claude-3-sonnet"
+  OPENAI_MODELS: "DeepSeek-R1-Distill-Qwen-14B-W4A16"
   OPENAI_REVERSE_PROXY: ""
 
   # UI Configuration
@@ -54,7 +54,7 @@ data:
   TOOLS_ENABLED: "false"
 
   # Model Parameters Defaults
-  OPENAI_DEFAULT_MODEL: "gpt-4-turbo-preview"
+  OPENAI_DEFAULT_MODEL: "DeepSeek-R1-Distill-Qwen-14B-W4A16"
   OPENAI_DEFAULT_TEMPERATURE: "0.7"
   OPENAI_DEFAULT_TOP_P: "1"
   OPENAI_DEFAULT_PRESENCE_PENALTY: "0"

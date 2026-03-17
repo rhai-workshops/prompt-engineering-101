@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openwebui
+  labels:
+    app: openwebui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openwebui
+  template:
+    metadata:
+      labels:
+        app: openwebui
+    spec:
+      containers:
+      - name: openwebui
+        image: ghcr.io/open-webui/open-webui:main
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        # MAAS Configuration
+        # Update this to match your MAAS endpoint
+        - name: OPENAI_API_BASE_URL
+          value: "https://your-maas-endpoint/v1"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openwebui-secrets
+              key: OPENAI_API_KEY
+        - name: OPENAI_API_MODELS
+          value: "Granite-3.3-8B-Instruct"
+
+        # Timeout Configuration (for slower models)
+        - name: AIOHTTP_CLIENT_TIMEOUT
+          value: "300"
+        - name: OPENAI_API_TIMEOUT
+          value: "300"
+
+        # App Configuration
+        - name: WEBUI_NAME
+          value: "AI Workshop - Open WebUI"
+        - name: ENABLE_SIGNUP
+          value: "true"
+        - name: DEFAULT_USER_ROLE
+          value: "user"
+        - name: ENABLE_COMMUNITY_SHARING
+          value: "false"
+
+        # Security
+        - name: WEBUI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openwebui-secrets
+              key: WEBUI_SECRET_KEY
+        - name: DATA_DIR
+          value: "/app/backend/data"
+        
+        volumeMounts:
+        - name: data
+          mountPath: /app/backend/data
+        
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 5
+      
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: openwebui-data-pvc

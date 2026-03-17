@@ -22,7 +22,7 @@ By the end of this workshop, you'll be able to:
 |------|----------|
 | 2:00–2:20 | Intro to AI & Large Language Models |
 | 2:20–2:35 | What is Prompt Engineering? |
-| 2:35–2:50 | LibreChat Platform Demo |
+| 2:35–2:50 | Open WebUI Platform Demo |
 | 2:50–3:40 | **LAB 1:** Prompt Engineering Basics |
 | 3:40–4:20 | **LAB 2:** Industry Use Cases |
 | 4:20–4:40 | **LAB 3:** Working with Documents (RAG) |
@@ -37,9 +37,9 @@ By the end of this workshop, you'll be able to:
 
 1. Open your browser and navigate to: **[Workshop URL will be shared]**
 2. Create an account or log in with provided credentials
-3. You'll see the LibreChat interface with a chat window
+3. You'll see the Open WebUI interface with a chat window
 
-### LibreChat Quick Tour
+### Open WebUI Quick Tour
 
 **Key features:**
 - **Chat window:** Type your prompts here

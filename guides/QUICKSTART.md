@@ -1,6 +1,6 @@
-# Quick Start Guide - LibreChat on OpenShift
+# Quick Start Guide - Open WebUI on OpenShift
 
-Get LibreChat running in under 10 minutes.
+Get Open WebUI running in under 10 minutes.
 
 ## Prerequisites
 
@@ -12,234 +12,183 @@ oc version
 oc login https://api.your-cluster.com:6443
 ```
 
-## Deploy in 5 Steps
+## Deploy in 4 Steps
 
-### 1. Generate Secrets
+### 1. Create Secrets
 
 ```bash
+# Navigate to Open WebUI deployment directory
+cd openshift/openwebui
+
 # Create secrets file from template
 cp 00-secrets.yaml.template 00-secrets.yaml
 
-# Generate random keys
-export JWT_SECRET=$(openssl rand -base64 32)
-export JWT_REFRESH_SECRET=$(openssl rand -base64 32)
-export CREDS_KEY=$(openssl rand -base64 32)
-export CREDS_IV=$(openssl rand -base64 16)
-
-# Edit secrets file
-vi 00-secrets.yaml
+# Generate secure keys
+openssl rand -base64 32
+# Copy output and use as WEBUI_SECRET_KEY
 ```
 
-Update these values in `00-secrets.yaml`:
-- `OPENAI_API_KEY`: Your actual API key
-- `OPENAI_API_BASE`: Your model endpoint (e.g., `https://api.openai.com/v1`)
-- `JWT_SECRET`: Paste generated value
-- `JWT_REFRESH_SECRET`: Paste generated value
-- `CREDS_KEY`: Paste generated value
-- `CREDS_IV`: Paste generated value
+Edit `00-secrets.yaml` and update:
+- `OPENAI_API_KEY`: Your MAAS API token
+- `WEBUI_SECRET_KEY`: Paste generated value from above
 
-### 2. Update Domain
+### 2. Configure Model Endpoint
 
-Edit `06-librechat-deployment.yaml`:
+Edit `02-deployment.yaml`:
 
-Find and replace:
+Update the `OPENAI_API_BASE_URL` value:
 ```yaml
-DOMAIN_SERVER: "https://librechat-ai-workshop.apps.your-cluster.com"
-DOMAIN_CLIENT: "https://librechat-ai-workshop.apps.your-cluster.com"
+- name: OPENAI_API_BASE_URL
+  value: "https://your-maas-endpoint/v1"
 ```
 
-With your actual OpenShift route domain.
-
-### 3. Run Deployment Script
-
-```bash
-chmod +x deploy.sh
-./deploy.sh
+Update the model name to match your MAAS endpoint:
+```yaml
+- name: OPENAI_API_MODELS
+  value: "Granite-3.3-8B-Instruct"
 ```
 
-### 4. Wait for Pods
+To check available models:
+```bash
+curl -s https://your-maas-endpoint/v1/models \
+  -H "Authorization: Bearer YOUR_API_KEY" | jq -r '.data[].id'
+```
+
+### 3. Deploy All Resources
 
 ```bash
-# Watch pods start
-oc get pods -w
+# Apply all YAML files in order
+oc apply -f 00-secrets.yaml
+oc apply -f 01-pvc.yaml
+oc apply -f 02-deployment.yaml
+oc apply -f 03-service.yaml
+oc apply -f 04-route.yaml
+
+# Wait for deployment to complete
+oc rollout status deployment/openwebui
+```
+
+### 4. Access Open WebUI
+
+```bash
+# Get the route URL
+oc get route openwebui -o jsonpath='{.spec.host}'
+
+# Or get full URL
+echo "https://$(oc get route openwebui -o jsonpath='{.spec.host}')"
+```
+
+Open the URL in your browser and create your admin account (first user becomes admin).
+
+## Verify Deployment
+
+```bash
+# Check pod status
+oc get pods -l app=openwebui
 
 # Should see:
-# mongodb-xxxxx          1/1   Running
-# librechat-xxxxx        1/1   Running
-# librechat-xxxxx        1/1   Running
+# openwebui-xxxxx   1/1   Running
+
+# Check logs
+oc logs -l app=openwebui --tail=50
+
+# Test health endpoint
+oc exec deployment/openwebui -- curl -s http://localhost:8080/health
+# Should return: {"status":true}
 ```
 
-### 5. Access LibreChat
+## Quick Configuration
+
+### Add More Models
+
+If you have access to multiple models through your MAAS endpoint:
 
 ```bash
-# Get URL
-oc get route librechat -o jsonpath='{.spec.host}'
-
-# Open in browser
-echo "https://$(oc get route librechat -o jsonpath='{.spec.host}')"
+oc set env deployment/openwebui \
+  OPENAI_API_MODELS="Granite-3.3-8B-Instruct,Mistral-7B-Instruct"
 ```
 
-## First Login
+### Increase Timeout (for slower models)
 
-1. Navigate to the URL
-2. Click "Sign Up"
-3. Create admin account
-4. Test a simple prompt: "Hello, how are you?"
+```bash
+oc set env deployment/openwebui \
+  AIOHTTP_CLIENT_TIMEOUT=300 \
+  OPENAI_API_TIMEOUT=300
+```
 
-## Verify Everything Works
+### Disable User Registration (after admin setup)
 
-### Test File Upload
-1. Click the paperclip icon
-2. Upload a test image
-3. Ask: "What's in this image?"
-
-### Test Document Upload
-1. Upload a PDF
-2. Ask: "Summarize this document"
-
-### Test Model Selection
-1. Click model dropdown
-2. Verify your models appear
-3. Switch between models
+```bash
+oc set env deployment/openwebui ENABLE_SIGNUP=false
+```
 
 ## Troubleshooting
 
-### Pods not starting?
+### Pod not starting
 
 ```bash
 # Check events
-oc get events --sort-by='.lastTimestamp'
+oc describe pod -l app=openwebui
 
-# Check logs
-oc logs deployment/librechat
-oc logs deployment/mongodb
-
-# Describe pod
-oc describe pod -l app=librechat
+# Common issues:
+# - PVC not bound (check storage class)
+# - Image pull errors (check network/registry)
+# - Missing secrets (verify 00-secrets.yaml applied)
 ```
 
-### Can't access route?
+### Model not responding
+
+```bash
+# Test MAAS endpoint from pod
+oc exec deployment/openwebui -- python3 -c "
+import requests
+r = requests.get('https://your-endpoint/v1/models',
+                 headers={'Authorization': 'Bearer YOUR_KEY'},
+                 timeout=10)
+print(r.status_code)
+print(r.json())
+"
+
+# Check logs for connection errors
+oc logs deployment/openwebui | grep -i "error\|timeout"
+```
+
+### Can't access route
 
 ```bash
 # Verify route exists
-oc get route
+oc get route openwebui
 
-# Check route details
-oc describe route librechat
+# Check route configuration
+oc describe route openwebui
 
-# Test from pod
-oc exec deployment/librechat -- curl localhost:3080/api/health
+# Test from within cluster
+oc run test --image=curlimages/curl --rm -i --restart=Never \
+  -- curl -s http://openwebui:8080/health
 ```
 
-### File uploads failing?
+## Cleanup
 
 ```bash
-# Check PVC
-oc get pvc
+# Remove all resources
+cd openshift/openwebui
+oc delete -f .
 
-# Verify mount
-oc exec deployment/librechat -- ls -la /app/api/uploads
-```
-
-### Model API not connecting?
-
-```bash
-# Check secrets
-oc get secret librechat-secrets -o yaml
-
-# Test from pod
-oc exec deployment/librechat -- env | grep OPENAI
-```
-
-## Scale for Workshop
-
-```bash
-# More participants? Scale up
-oc scale deployment/librechat --replicas=3
-
-# Check status
-oc get pods -l app=librechat
-```
-
-## Useful Commands
-
-```bash
-# View all resources
-oc get all
-
-# Follow logs
-oc logs -f deployment/librechat
-
-# Restart deployment
-oc rollout restart deployment/librechat
-
-# Check resource usage
-oc adm top pods
-
-# Shell into pod
-oc exec -it deployment/librechat -- /bin/bash
-```
-
-## Clean Up
-
-```bash
-# Delete everything
-chmod +x cleanup.sh
-./cleanup.sh
+# Remove PVC (data will be lost)
+oc delete pvc openwebui-data-pvc
 ```
 
 ## Next Steps
 
-- Review [WORKSHOP-CHECKLIST.md](WORKSHOP-CHECKLIST.md) for workshop prep
-- Read [README-OPENSHIFT.md](README-OPENSHIFT.md) for detailed documentation
-- Test all lab scenarios from [CLAUDE.md](CLAUDE.md)
+1. Create your admin account at the Open WebUI URL
+2. Review the workspace features (Models, Knowledge, Prompts)
+3. Test with a simple prompt
+4. Upload a sample file from `sample-data/`
+5. Review `WORKSHOP-GUIDE.md` for lab exercises
 
-## Support
+## Advanced Configuration
 
-### Common Issues
-
-| Issue | Solution |
-|-------|----------|
-| 403 Forbidden | Check API key in secrets |
-| 500 Internal Error | Check MongoDB connection |
-| Can't upload files | Verify PVC status and mounts |
-| Slow responses | Check model API latency |
-| Pods crashing | Check memory limits |
-
-### Health Checks
-
-```bash
-# Application health
-curl https://$(oc get route librechat -o jsonpath='{.spec.host}')/api/health
-
-# MongoDB health
-oc exec deployment/mongodb -- mongosh --eval "db.adminCommand('ping')"
-```
-
-### Logs Location
-
-```bash
-# Application logs
-oc logs deployment/librechat
-
-# Previous crash logs
-oc logs deployment/librechat --previous
-
-# All logs
-oc logs deployment/librechat --all-containers=true
-```
-
-## Default Credentials
-
-**First user registered becomes admin.**
-
-Consider creating admin account before workshop:
-- Username: `workshop-admin`
-- Email: `admin@workshop.local`
-- Password: `[Choose secure password]`
-
-Then share participant registration link.
-
----
-
-**Ready for the workshop? Check [WORKSHOP-CHECKLIST.md](WORKSHOP-CHECKLIST.md)!**
+For detailed configuration options, see:
+- `openshift/openwebui/README.md` - Full deployment guide
+- `openshift/openwebui/02-deployment.yaml` - All environment variables
+- Open WebUI documentation: https://docs.openwebui.com

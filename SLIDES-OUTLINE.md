@@ -25,7 +25,7 @@
   - How Large Language Models work
   - Prompt engineering techniques
   - Real-world marketing/sales applications
-  - Hands-on practice with LibreChat
+  - Hands-on practice with Open WebUI
 - **Key message:** "You'll leave with practical skills you can use Monday morning."
 
 ### Slide 3: Agenda Overview
@@ -35,7 +35,7 @@
 
 ### Slide 4: Housekeeping
 - WiFi credentials
-- LibreChat URL (share on screen)
+- Open WebUI URL (share on screen)
 - How to access materials
 - Break schedule (if any)
 - Questions: save for Q&A or ask anytime?
@@ -204,14 +204,14 @@ Return as a table.
 
 ---
 
-## Section 4: LibreChat Demo (15 minutes)
+## Section 4: Open WebUI Demo (15 minutes)
 **Time:** 2:35–2:50 PM
 
 ### Slide 23: Section Divider
-- **"LibreChat Platform Demo"**
+- **"Open WebUI Platform Demo"**
 - Subtitle: "Your AI workspace for today"
 
-### Slide 24: What is LibreChat?
+### Slide 24: What is Open WebUI?
 - Open-source AI chat interface
 - Connects to multiple AI models (GPT, Claude, Granite, etc.)
 - Features:
@@ -220,7 +220,7 @@ Return as a table.
   - Model switching
   - Multi-user support
 
-### Slide 25: Accessing LibreChat
+### Slide 25: Accessing Open WebUI
 - **Display URL prominently on screen**
 - Login instructions
 - Account creation (if self-registration enabled)
@@ -235,7 +235,30 @@ Return as a table.
 - Conversation history (sidebar)
 - Settings (if relevant)
 
-### Slide 27–29: Live Demo
+### Slide 27: Workspace Features
+**Open WebUI provides powerful workspace tools:**
+
+**Models**
+- Create custom model configurations
+- Adjust parameters (temperature, system prompts)
+- Save presets for different use cases
+
+**Knowledge**
+- Upload documents for RAG (Retrieval Augmented Generation)
+- Build knowledge bases from your files
+- Query uploaded documents in conversations
+
+**Prompts**
+- Save and reuse effective prompts
+- Create templates with variables
+- Share prompts with your team
+
+**Skills & Tools**
+- Extend AI capabilities with functions
+- Web search integration
+- Code execution and file analysis
+
+### Slide 28–30: Live Demo
 **Note:** These are placeholders for live demonstration. Prepare to show:
 
 **Demo 1: Basic Prompt**
@@ -254,7 +277,7 @@ Return as a table.
 - Show output
 - "This is multimodal AI—it can see and analyze images."
 
-### Slide 30: Tips for Using LibreChat Today
+### Slide 31: Tips for Using Open WebUI Today
 - **Start simple, then refine**
 - **Upload files using the 📎 button**
 - **Experiment freely—there are no wrong questions**
@@ -388,7 +411,7 @@ Before you leave, think about:
 
 ### Slide 44: Bonus Slide – Additional Resources (Optional)
 - Red Hat AI documentation
-- LibreChat GitHub repo
+- Open WebUI GitHub repo
 - Prompt engineering guides
 - Community forums
 - Recommended reading
@@ -405,11 +428,11 @@ Before you leave, think about:
 - **Code examples** in monospace font on shaded background
 
 ### Key Visuals to Include:
-1. **AI architecture diagram** (user → LibreChat → model → output)
+1. **AI architecture diagram** (user → Open WebUI → model → output)
 2. **Before/after prompt comparisons** (bad vs. good)
 3. **Temperature slider graphic**
 4. **Prompt anatomy breakdown** (color-coded sections)
-5. **Screenshot of LibreChat interface** (annotated)
+5. **Screenshot of Open WebUI interface** (annotated)
 6. **Cross-industry use case table**
 
 ### Engagement Tips:
@@ -449,7 +472,7 @@ Before you leave, think about:
 
 Before the workshop, ensure you have:
 - [ ] Slide deck finalized and tested
-- [ ] LibreChat URL accessible
+- [ ] Open WebUI URL accessible
 - [ ] Sample data files uploaded and ready
 - [ ] Workshop guide printed or digitally shared
 - [ ] Prompt cheat sheet ready to distribute

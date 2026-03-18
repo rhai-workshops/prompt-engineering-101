@@ -24,7 +24,7 @@ spec:
         # MAAS Configuration
         # Update this to match your MAAS endpoint
         - name: OPENAI_API_BASE_URL
-          value: "https://your-maas-endpoint/v1"
+          value: "https://litellm-litemaas.apps.prod.rhoai.rh-aiservices-bu.com/v1"
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
@@ -48,6 +48,14 @@ spec:
           value: "user"
         - name: ENABLE_COMMUNITY_SHARING
           value: "false"
+
+        # Default Models for all users
+        - name: DEFAULT_MODELS
+          value: "Granite-3.3-8B-Instruct"
+        - name: MODEL_FILTER_ENABLED
+          value: "true"
+        - name: MODEL_FILTER_LIST
+          value: "Granite-3.3-8B-Instruct"
 
         # Security
         - name: WEBUI_SECRET_KEY

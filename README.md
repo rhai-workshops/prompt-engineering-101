@@ -1,12 +1,16 @@
-# AI Workshop: Practical Prompt Engineering for Marketing & Sales
+# Prompt Engineering 101
 
 Complete workshop package for teaching prompt engineering and AI skills to non-technical professionals.
+
+**🎓 Workshop Slides:** [View Presentation](https://docs.google.com/presentation/d/15uhHMERyQhyd285_Lh7q-ZQJMiSOfZndS7reZMgumNg/edit?slide=id.g367e88771d4_0_5447#slide=id.g367e88771d4_0_5447)
+
+> Originally developed for NC State Textiles workshop, now generalized for any industry.
 
 ---
 
 ## Overview
 
-**Target Audience:** Marketing and sales professionals (textiles industry)
+**Target Audience:** Marketing and sales professionals (adaptable to any industry)
 **Duration:** 3 hours (2:00–5:00 PM)
 **Platform:** Open WebUI on OpenShift
 **Focus:** Hands-on prompt engineering with real use cases
@@ -318,12 +322,6 @@ Note: Open WebUI uses ReadWriteOnce (RWO) storage, so replicas=1 only. For high 
 - Check `openshift/openwebui/README.md` for troubleshooting
 - Review OpenShift logs: `oc logs -l app=openwebui`
 - Verify MAAS API configuration in secrets and deployment
-
----
-
-## License
-
-[Add your license here]
 
 ---
 
